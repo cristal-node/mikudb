@@ -3,11 +3,15 @@
 import requests
 from bs4 import BeautifulSoup
 import sqlite3
+from multiprocessing.pool import ThreadPool
 
 
 
 con = sqlite3.connect("mikudb.db")
 cur = con.cursor()
+
+
+pool = []
 
 
 class mikudb():
@@ -16,6 +20,13 @@ class mikudb():
 			i +=1
 			print(f"Working on page {i}")
 			self.page(i);
+		print("pool starting!")
+
+	    results = ThreadPool(30).imap_unordered(self.article, pool)
+	    for r in results:
+	        print(r)
+
+
 		con.commit()
 		cur.close()
 		con.close()
@@ -29,7 +40,9 @@ class mikudb():
 		soup = BeautifulSoup(requests.get(url).text, features='lxml').select("#content")[0].select("h4 > a")
 		for item in soup:
 			link = item.attrs["href"]
-			self.article(link);
+			# self.article(link);
+			print(f"adding to pool: [{link}]")
+			pool.append(link)
 
 	def article(self, url):
 		soup = BeautifulSoup(requests.get(url).text, features='lxml')
