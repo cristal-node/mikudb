@@ -8,7 +8,7 @@ from multiprocessing.pool import ThreadPool
 
 
 con = sqlite3.connect("mikudb.db")
-cur = con.cursor()
+# cur = con.cursor()
 
 
 pool = []
@@ -25,7 +25,7 @@ class mikudb():
 			print(r)
 
 		con.commit()
-		cur.close()
+		# cur.close()
 		con.close()
 
 	def page_number(self):
@@ -62,7 +62,9 @@ class mikudb():
 	def update(self, title, quality, cloud, link):
 		temp_list = [title, quality, cloud, link]
 		tp = tuple(temp_list)
+		cur = con.cursor()
 		cur.execute('INSERT INTO "main"."albums"("title","quality","cloud","url") VALUES (?,?,?,?);', tp)
+		cur.close()
 		print(f"tuple: [{tp}]")
 
 
