@@ -21,7 +21,6 @@ class mikudb():
 			print(f"Working on page {i}")
 			self.page(i);
 		print("pool starting!")
-
 	    results = ThreadPool(30).imap_unordered(article, pool)
 	    for r in results:
 	        print(r)
