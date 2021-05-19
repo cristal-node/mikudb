@@ -44,7 +44,7 @@ class mikudb():
 		for item in soup:
 			link = item.attrs["href"]
 			# self.article(link);
-			print(f"adding to pool: [{link}]")
+			print(f"adding to pool: [{link}] from page({number})")
 			pool.append(link)
 
 	def article(self, url):
