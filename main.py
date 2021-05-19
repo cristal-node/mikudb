@@ -22,7 +22,7 @@ class mikudb():
 			self.page(i);
 		print("pool starting!")
 
-	    results = ThreadPool(30).imap_unordered(self.article, pool)
+	    results = ThreadPool(30).imap_unordered(article, pool)
 	    for r in results:
 	        print(r)
 
@@ -44,29 +44,29 @@ class mikudb():
 			print(f"adding to pool: [{link}]")
 			pool.append(link)
 
-	def article(self, url):
-		soup = BeautifulSoup(requests.get(url).text, features='lxml')
-		title = soup.select(".album-title")[0].string
-		# print(title)
-		items = BeautifulSoup(str(soup.select(".download-bar > div:nth-child(5) > p:nth-child(1)")[0]).replace("<br/>", "</p><p>"), features='lxml').find_all("p")
-		for item in items:
-			link = item.a.attrs["href"]
-			cloud = item.a.string
-			item.a.clear()
-			quality = " ".join(str(item.text).replace("\n","").split())
-			if len(items) == 1:
-				quality = "default"
-			print(f"title= [{title}]\nquality= [{quality}]\nlink= [{link}]\ncloud= [{cloud}]")
-			self.update(title, quality, cloud, link)
-		print(items)
-		# dw = soup.select(".download-bar > div:nth-child(5) > p:nth-child(1) > a");
-		# print(dw);
+def article(url):
+	soup = BeautifulSoup(requests.get(url).text, features='lxml')
+	title = soup.select(".album-title")[0].string
+	# print(title)
+	items = BeautifulSoup(str(soup.select(".download-bar > div:nth-child(5) > p:nth-child(1)")[0]).replace("<br/>", "</p><p>"), features='lxml').find_all("p")
+	for item in items:
+		link = item.a.attrs["href"]
+		cloud = item.a.string
+		item.a.clear()
+		quality = " ".join(str(item.text).replace("\n","").split())
+		if len(items) == 1:
+			quality = "default"
+		print(f"title= [{title}]\nquality= [{quality}]\nlink= [{link}]\ncloud= [{cloud}]")
+		update(title, quality, cloud, link)
+	print(items)
+	# dw = soup.select(".download-bar > div:nth-child(5) > p:nth-child(1) > a");
+	# print(dw);
 
-	def update(self, title, quality, cloud, link):
-		temp_list = [title, quality, cloud, link]
-		tp = tuple(temp_list)
-		cur.execute('INSERT INTO "main"."albums"("title","quality","cloud","url") VALUES (?,?,?,?);', tp)
-		print(f"tuple: [{tp}]")
+def update(title, quality, cloud, link):
+	temp_list = [title, quality, cloud, link]
+	tp = tuple(temp_list)
+	cur.execute('INSERT INTO "main"."albums"("title","quality","cloud","url") VALUES (?,?,?,?);', tp)
+	print(f"tuple: [{tp}]")
 
 
 mikudb();
