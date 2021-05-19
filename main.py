@@ -8,10 +8,12 @@ from multiprocessing.pool import ThreadPool
 
 
 con = sqlite3.connect("mikudb.db")
-# cur = con.cursor()
+cur = con.cursor()
 
 
 pool = []
+
+sql_list = []
 
 
 class mikudb():
@@ -24,8 +26,11 @@ class mikudb():
 		for r in results:
 			print(r)
 
+		for cm in sql_list:
+			self.update(cm)
+
 		con.commit()
-		# cur.close()
+		cur.close()
 		con.close()
 
 	def page_number(self):
@@ -34,6 +39,7 @@ class mikudb():
 
 	def page(self, number):
 		url = "http://mikudb.moe/type/vocaloid/page/" + str(number)
+		print(f"working on page({number})")
 		soup = BeautifulSoup(requests.get(url).text, features='lxml').select("#content")[0].select("h4 > a")
 		for item in soup:
 			link = item.attrs["href"]
@@ -54,18 +60,18 @@ class mikudb():
 			if len(items) == 1:
 				quality = "default"
 			print(f"title= [{title}]\nquality= [{quality}]\nlink= [{link}]\ncloud= [{cloud}]")
-			self.update(title, quality, cloud, link)
+			# self.update(title, quality, cloud, link)
+			sql_list.append([title, quality, cloud, link])
 		print(items)
 		# dw = soup.select(".download-bar > div:nth-child(5) > p:nth-child(1) > a");
 		# print(dw);
 
-	def update(self, title, quality, cloud, link):
-		temp_list = [title, quality, cloud, link]
+	def update(self, temp_list):
+		# temp_list = [title, quality, cloud, link]
 		tp = tuple(temp_list)
-		cur = con.cursor()
-		cur.execute('INSERT INTO "main"."albums"("title","quality","cloud","url") VALUES (?,?,?,?);', tp)
-		cur.close()
 		print(f"tuple: [{tp}]")
+		cur.execute('INSERT INTO "main"."albums"("title","quality","cloud","url") VALUES (?,?,?,?);', tp)
+	
 
 
 mikudb();
