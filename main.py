@@ -16,11 +16,14 @@ pool = []
 
 class mikudb():
 	def __init__(self):
-		for i in range(self.page_number()):
-			i +=1
-			print(f"Working on page {i}")
-			self.page(i);
+		# for i in range(self.page_number()):
+		# 	i +=1
+		# 	print(f"Working on page {i}")
+		# 	self.page(i);
 		print("pool starting!")
+		pages_results = ThreadPool(30).imap_unordered(self.page, range(1,self.page_number()+1))
+		for r in pages_results:
+			print(r)
 		results = ThreadPool(30).imap_unordered(self.article, pool)
 		for r in results:
 			print(r)
