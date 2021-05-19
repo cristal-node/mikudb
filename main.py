@@ -61,7 +61,7 @@ class mikudb():
 				quality = "default"
 			print(f"title= [{title}]\nquality= [{quality}]\nlink= [{link}]\ncloud= [{cloud}]")
 			# self.update(title, quality, cloud, link)
-			sql_list.append([title, quality, cloud, link])
+			sql_list.append([title, quality, cloud, link, url])
 		print(items)
 		# dw = soup.select(".download-bar > div:nth-child(5) > p:nth-child(1) > a");
 		# print(dw);
@@ -70,7 +70,7 @@ class mikudb():
 		# temp_list = [title, quality, cloud, link]
 		tp = tuple(temp_list)
 		print(f"tuple: [{tp}]")
-		cur.execute('INSERT INTO "main"."albums"("title","quality","cloud","url") VALUES (?,?,?,?);', tp)
+		cur.execute('INSERT INTO "main"."albums"("title","quality","cloud","url","webpage") VALUES (?,?,?,?,?);', tp)
 	
 
 
