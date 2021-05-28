@@ -28,7 +28,7 @@ class mikudb():
 			pool = json.load(f)
 		print("pool is:", pool)
 		print("pool starting!")
-		results = ThreadPool(30).imap_unordered(self.article, pool)
+		results = ThreadPool(300).imap_unordered(self.article, pool)
 		for r in results:
 			print(r)
 
