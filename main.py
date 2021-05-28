@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import sqlite3
 from multiprocessing.pool import ThreadPool
+import json
 
 
 
@@ -21,6 +22,8 @@ class mikudb():
 		pages_results = ThreadPool(30).imap_unordered(self.page, range(1,self.page_number()+1))
 		for r in pages_results:
 			print(r)
+		with open("pool.json", "w") as f:
+			json.dump(pool, f)
 		print("pool starting!")
 		results = ThreadPool(30).imap_unordered(self.article, pool)
 		for r in results:
