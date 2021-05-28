@@ -19,11 +19,14 @@ sql_list = []
 
 class mikudb():
 	def __init__(self):
-		pages_results = ThreadPool(30).imap_unordered(self.page, range(1,self.page_number()+1))
-		for r in pages_results:
-			print(r)
-		with open("pool.json", "w") as f:
-			json.dump(pool, f)
+		# pages_results = ThreadPool(30).imap_unordered(self.page, range(1,self.page_number()+1))
+		# for r in pages_results:
+		# 	print(r)
+		# with open("pool.json", "w") as f:
+		# 	json.dump(pool, f)
+		with open("pool.json", 'r') as f:
+			pool = json.load(f)
+		print("pool is:", pool)
 		print("pool starting!")
 		results = ThreadPool(30).imap_unordered(self.article, pool)
 		for r in results:
@@ -52,20 +55,25 @@ class mikudb():
 
 	def article(self, url):
 		soup = BeautifulSoup(requests.get(url).text, features='lxml')
-		title = soup.select(".album-title")[0].string
-		# print(title)
-		items = BeautifulSoup(str(soup.select(".download-bar > div:nth-child(5) > p:nth-child(1)")[0]).replace("<br/>", "</p><p>"), features='lxml').find_all("p")
-		for item in items:
-			link = item.a.attrs["href"]
-			cloud = item.a.string
-			item.a.clear()
-			quality = " ".join(str(item.text).replace("\n","").split())
-			if len(items) == 1:
-				quality = "default"
-			print(f"title= [{title}]\nquality= [{quality}]\nlink= [{link}]\ncloud= [{cloud}]")
-			# self.update(title, quality, cloud, link)
-			sql_list.append([title, quality, cloud, link, url])
-		print(items)
+		try:
+			title = soup.select(".album-title")[0].string
+			# print(title)
+			items = BeautifulSoup(str(soup.select(".download-bar > div:nth-child(5) > p:nth-child(1)")[0]).replace("<br/>", "</p><p>"), features='lxml').find_all("p")
+			for item in items:
+				link = item.a.attrs["href"]
+				cloud = item.a.string
+				item.a.clear()
+				quality = " ".join(str(item.text).replace("\n","").split())
+				if len(items) == 1:
+					quality = "default"
+				print(f"title= [{title}]\nquality= [{quality}]\nlink= [{link}]\ncloud= [{cloud}]")
+				# self.update(title, quality, cloud, link)
+				sql_list.append([title, quality, cloud, link, url])
+			print(items)
+		except:
+			print("got exception on:", url)
+			with open("exceptions", 'w') as f:
+				f.write(url+'\n')
 		# dw = soup.select(".download-bar > div:nth-child(5) > p:nth-child(1) > a");
 		# print(dw);
 
@@ -77,7 +85,7 @@ class mikudb():
 	
 
 
-mikudb();
+mikudb()
 
 # url = "http://mikudb.moe/type/vocaloid/page/"
 
